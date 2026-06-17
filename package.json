@@ -14,7 +14,11 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
 		"format": "biome format . --write",
-		"format:check": "biome format ."
+		"format:check": "biome format .",
+		"drizzle:push"  : "drizzle-kit push",
+		"drizzle:generate"  : "drizzle-kit generate",
+		"drizzle:miigrate"  : "drizzle-kit migrate"
+
 	},
 	"dependencies": {
 		"@nestjs/common": "^11.0.1",
