@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ThrottlerModule } from "@nestjs/throttler";
-import {ConfigModule} from "@nestjs/config"
+import { ConfigModule } from "@nestjs/config"
 @Module({
 	 imports: [
     ConfigModule.forRoot(),
