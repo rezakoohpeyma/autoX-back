@@ -1,6 +1,6 @@
 {
-	"id": "da9ebccf-56be-47ef-aee0-f39e71267920",
-	"prevId": "0bda572e-0d36-40e9-8605-0b48f4214131",
+	"id": "326f91d9-c2f7-4ee5-b38c-13093661683d",
+	"prevId": "52d492d8-6b5e-4238-9b44-6e02e031b58e",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -227,10 +227,10 @@
 			},
 			"indexes": {},
 			"foreignKeys": {
-				"sessions_user_id_users_id_fk": {
-					"name": "sessions_user_id_users_id_fk",
+				"sessions_user_id_user_id_fk": {
+					"name": "sessions_user_id_user_id_fk",
 					"tableFrom": "sessions",
-					"tableTo": "users",
+					"tableTo": "user",
 					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
@@ -243,26 +243,49 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"public.users": {
-			"name": "users",
+		"public.user": {
+			"name": "user",
 			"schema": "",
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "integer",
 					"primaryKey": true,
 					"notNull": true,
-					"default": "gen_random_uuid()"
+					"identity": {
+						"type": "always",
+						"name": "user_id_seq",
+						"schema": "public",
+						"increment": "1",
+						"startWith": "1",
+						"minValue": "1",
+						"maxValue": "2147483647",
+						"cache": "1",
+						"cycle": false
+					}
 				},
-				"phone_number": {
-					"name": "phone_number",
-					"type": "varchar(20)",
+				"email": {
+					"name": "email",
+					"type": "varchar(255)",
 					"primaryKey": false,
-					"notNull": true
+					"notNull": false
 				},
-				"password_hash": {
-					"name": "password_hash",
+				"password": {
+					"name": "password",
 					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"provider": {
+					"name": "provider",
+					"type": "varchar(50)",
+					"primaryKey": false,
+					"notNull": false,
+					"default": "'email'"
+				},
+				"social_id": {
+					"name": "social_id",
+					"type": "varchar(255)",
 					"primaryKey": false,
 					"notNull": false
 				},
@@ -278,25 +301,12 @@
 					"primaryKey": false,
 					"notNull": false
 				},
-				"is_phone_verified": {
-					"name": "is_phone_verified",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true,
-					"default": false
-				},
 				"is_active": {
 					"name": "is_active",
 					"type": "boolean",
 					"primaryKey": false,
 					"notNull": true,
 					"default": true
-				},
-				"last_login_at": {
-					"name": "last_login_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false
 				},
 				"created_at": {
 					"name": "created_at",
@@ -311,16 +321,22 @@
 					"primaryKey": false,
 					"notNull": true,
 					"default": "now()"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
 				}
 			},
 			"indexes": {},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {
-				"users_phone_number_unique": {
-					"name": "users_phone_number_unique",
+				"user_email_unique": {
+					"name": "user_email_unique",
 					"nullsNotDistinct": false,
-					"columns": ["phone_number"]
+					"columns": ["email"]
 				}
 			},
 			"policies": {},

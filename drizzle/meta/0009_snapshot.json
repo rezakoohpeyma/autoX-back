@@ -1,6 +1,6 @@
 {
-	"id": "da9ebccf-56be-47ef-aee0-f39e71267920",
-	"prevId": "0bda572e-0d36-40e9-8605-0b48f4214131",
+	"id": "7bae89e4-a3e7-4e19-9352-63964f10807c",
+	"prevId": "03b2d102-d6d8-4f95-9273-2d650f70c088",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -157,112 +157,38 @@
 			"checkConstraints": {},
 			"isRLSEnabled": false
 		},
-		"public.sessions": {
-			"name": "sessions",
+		"public.user": {
+			"name": "user",
 			"schema": "",
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "serial",
 					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "uuid",
-					"primaryKey": false,
 					"notNull": true
 				},
-				"refresh_token_hash": {
-					"name": "refresh_token_hash",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"device_name": {
-					"name": "device_name",
+				"email": {
+					"name": "email",
 					"type": "varchar(255)",
 					"primaryKey": false,
 					"notNull": false
 				},
-				"user_agent": {
-					"name": "user_agent",
+				"password": {
+					"name": "password",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": false
 				},
-				"ip_address": {
-					"name": "ip_address",
-					"type": "varchar(45)",
+				"provider": {
+					"name": "provider",
+					"type": "varchar(50)",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": false,
+					"default": "'email'"
 				},
-				"expires_at": {
-					"name": "expires_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"last_used_at": {
-					"name": "last_used_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"revoked_at": {
-					"name": "revoked_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"sessions_user_id_users_id_fk": {
-					"name": "sessions_user_id_users_id_fk",
-					"tableFrom": "sessions",
-					"tableTo": "users",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.users": {
-			"name": "users",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"phone_number": {
-					"name": "phone_number",
-					"type": "varchar(20)",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"password_hash": {
-					"name": "password_hash",
-					"type": "text",
+				"social_id": {
+					"name": "social_id",
+					"type": "varchar(255)",
 					"primaryKey": false,
 					"notNull": false
 				},
@@ -278,25 +204,12 @@
 					"primaryKey": false,
 					"notNull": false
 				},
-				"is_phone_verified": {
-					"name": "is_phone_verified",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true,
-					"default": false
-				},
 				"is_active": {
 					"name": "is_active",
 					"type": "boolean",
 					"primaryKey": false,
 					"notNull": true,
 					"default": true
-				},
-				"last_login_at": {
-					"name": "last_login_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false
 				},
 				"created_at": {
 					"name": "created_at",
@@ -311,16 +224,22 @@
 					"primaryKey": false,
 					"notNull": true,
 					"default": "now()"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
 				}
 			},
 			"indexes": {},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {
-				"users_phone_number_unique": {
-					"name": "users_phone_number_unique",
+				"user_email_unique": {
+					"name": "user_email_unique",
 					"nullsNotDistinct": false,
-					"columns": ["phone_number"]
+					"columns": ["email"]
 				}
 			},
 			"policies": {},

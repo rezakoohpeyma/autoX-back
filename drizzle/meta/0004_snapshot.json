@@ -1,6 +1,6 @@
 {
-	"id": "da9ebccf-56be-47ef-aee0-f39e71267920",
-	"prevId": "0bda572e-0d36-40e9-8605-0b48f4214131",
+	"id": "52d492d8-6b5e-4238-9b44-6e02e031b58e",
+	"prevId": "f0edd5bd-34df-49f3-af65-e76b4a957b4f",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -254,17 +254,23 @@
 					"notNull": true,
 					"default": "gen_random_uuid()"
 				},
+				"email": {
+					"name": "email",
+					"type": "varchar(100)",
+					"primaryKey": false,
+					"notNull": false
+				},
 				"phone_number": {
 					"name": "phone_number",
 					"type": "varchar(20)",
 					"primaryKey": false,
 					"notNull": true
 				},
-				"password_hash": {
-					"name": "password_hash",
+				"password": {
+					"name": "password",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true
 				},
 				"first_name": {
 					"name": "first_name",
@@ -278,13 +284,6 @@
 					"primaryKey": false,
 					"notNull": false
 				},
-				"is_phone_verified": {
-					"name": "is_phone_verified",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true,
-					"default": false
-				},
 				"is_active": {
 					"name": "is_active",
 					"type": "boolean",
@@ -292,18 +291,18 @@
 					"notNull": true,
 					"default": true
 				},
-				"last_login_at": {
-					"name": "last_login_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false
-				},
 				"created_at": {
 					"name": "created_at",
 					"type": "timestamp",
 					"primaryKey": false,
 					"notNull": true,
 					"default": "now()"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
 				},
 				"updated_at": {
 					"name": "updated_at",
@@ -317,6 +316,11 @@
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {
+				"users_email_unique": {
+					"name": "users_email_unique",
+					"nullsNotDistinct": false,
+					"columns": ["email"]
+				},
 				"users_phone_number_unique": {
 					"name": "users_phone_number_unique",
 					"nullsNotDistinct": false,

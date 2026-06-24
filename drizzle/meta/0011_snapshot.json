@@ -1,6 +1,6 @@
 {
-	"id": "0bda572e-0d36-40e9-8605-0b48f4214131",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "19e573b4-4fec-4337-bf4e-76eb8c974feb",
+	"prevId": "0dd5c4db-6bdb-4937-bf76-82f744c13c6a",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -10,22 +10,21 @@
 			"columns": {
 				"id": {
 					"name": "id",
-					"type": "uuid",
+					"type": "serial",
 					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"phone_number": {
-					"name": "phone_number",
-					"type": "varchar(20)",
-					"primaryKey": false,
 					"notNull": true
 				},
-				"password_hash": {
-					"name": "password_hash",
-					"type": "text",
+				"email": {
+					"name": "email",
+					"type": "varchar(255)",
 					"primaryKey": false,
 					"notNull": false
+				},
+				"password": {
+					"name": "password",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
 				},
 				"first_name": {
 					"name": "first_name",
@@ -39,25 +38,18 @@
 					"primaryKey": false,
 					"notNull": false
 				},
-				"is_phone_verified": {
-					"name": "is_phone_verified",
-					"type": "boolean",
+				"phone_number": {
+					"name": "phone_number",
+					"type": "varchar(20)",
 					"primaryKey": false,
-					"notNull": true,
-					"default": false
+					"notNull": true
 				},
 				"is_active": {
 					"name": "is_active",
 					"type": "boolean",
 					"primaryKey": false,
-					"notNull": true,
+					"notNull": false,
 					"default": true
-				},
-				"last_login_at": {
-					"name": "last_login_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false
 				},
 				"created_at": {
 					"name": "created_at",
@@ -72,16 +64,22 @@
 					"primaryKey": false,
 					"notNull": true,
 					"default": "now()"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
 				}
 			},
 			"indexes": {},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {
-				"users_phone_number_unique": {
-					"name": "users_phone_number_unique",
+				"users_email_unique": {
+					"name": "users_email_unique",
 					"nullsNotDistinct": false,
-					"columns": ["phone_number"]
+					"columns": ["email"]
 				}
 			},
 			"policies": {},

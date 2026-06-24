@@ -13,20 +13,21 @@
 		"start:prod": "node dist/main",
 		"lint": "biome check .",
 		"lint:fix": "biome check . --write",
-		"format": "biome format . --write",
-		"format:check": "biome format .",
-		"drizzle:push"  : "drizzle-kit push",
-		"drizzle:generate"  : "drizzle-kit generate",
-		"drizzle:miigrate"  : "drizzle-kit migrate"
-
+		"format": "biome format --write",
+		"format:check": "biome format . --",
+		"drizzle:push": "drizzle-kit push",
+		"drizzle:generate": "drizzle-kit generate",
+		"drizzle:miigrate": "drizzle-kit migrate"
 	},
 	"dependencies": {
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/config": "^4.0.4",
 		"@nestjs/core": "^11.0.1",
 		"@nestjs/jwt": "^11.0.2",
+		"@nestjs/mapped-types": "^2.1.1",
 		"@nestjs/passport": "^11.0.5",
 		"@nestjs/platform-express": "^11.0.1",
+		"@nestjs/swagger": "^11.2.6",
 		"@nestjs/throttler": "^6.5.0",
 		"bcrypt": "^6.0.0",
 		"class-transformer": "^0.5.1",

@@ -1,6 +1,6 @@
 {
-	"id": "da9ebccf-56be-47ef-aee0-f39e71267920",
-	"prevId": "0bda572e-0d36-40e9-8605-0b48f4214131",
+	"id": "31a8b7b4-fa34-46de-810e-aa4434bfdec7",
+	"prevId": "da9ebccf-56be-47ef-aee0-f39e71267920",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -260,11 +260,11 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"password_hash": {
-					"name": "password_hash",
+				"password": {
+					"name": "password",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true
 				},
 				"first_name": {
 					"name": "first_name",
@@ -278,13 +278,6 @@
 					"primaryKey": false,
 					"notNull": false
 				},
-				"is_phone_verified": {
-					"name": "is_phone_verified",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true,
-					"default": false
-				},
 				"is_active": {
 					"name": "is_active",
 					"type": "boolean",
@@ -292,18 +285,18 @@
 					"notNull": true,
 					"default": true
 				},
-				"last_login_at": {
-					"name": "last_login_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false
-				},
 				"created_at": {
 					"name": "created_at",
 					"type": "timestamp",
 					"primaryKey": false,
 					"notNull": true,
 					"default": "now()"
+				},
+				"deleted_at": {
+					"name": "deleted_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
 				},
 				"updated_at": {
 					"name": "updated_at",
