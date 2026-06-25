@@ -1,15 +1,24 @@
-import "dotenv/config";
-import { NestFactory } from "@nestjs/core";
+import { NestFactory, Reflector } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import helmet from "helmet";
 import compression from "compression";
 import validationOptions from "./utils/validation-options";
+import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule, { cors: true });
+	const app = await NestFactory.create(AppModule, {
+		cors : {
+			origin : [process.env.CORS_ORIGINS!],
+			credentials : true
+		}
+	});
+
+	console.log(process.env.PORT)
 
 	app.enableShutdownHooks();
 	app.useGlobalPipes(new ValidationPipe(validationOptions));
+	app.useGlobalFilters(new GlobalExceptionFilter());
+	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 	app.use(helmet());
 	app.use(compression());
 	app.setGlobalPrefix("api");

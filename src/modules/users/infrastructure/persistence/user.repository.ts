@@ -1,6 +1,6 @@
 import { DeepPartial } from "../../../../utils/types/deep-partial.type";
 import { NullableType } from "../../../../utils/types/nullable.type";
-import { IPaginationOptions } from "../../../../utils/types/pagination-options";
+import { PaginationOptions } from "../../../../utils/types/pagination-options";
 import { User } from "../../domain/user";
 import { ChangeUserStatusDto } from "../../dto/change-user-status-dto";
 import { FilterUserDto } from "../../dto/query-user.dto";
@@ -17,7 +17,7 @@ export abstract class UserRepository {
 	}: {
 		filterOptions?: FilterUserDto | null;
 		sortOptions?: unknown[] | null;
-		paginationOptions: IPaginationOptions;
+		paginationOptions: PaginationOptions;
 	}): Promise<User[]>;
 
 	abstract getDeletedUsers({
@@ -27,7 +27,7 @@ export abstract class UserRepository {
 	}: {
 		filterOptions?: FilterUserDto | null;
 		sortOptions?: unknown[] | null;
-		paginationOptions: IPaginationOptions;
+		paginationOptions: PaginationOptions;
 	}): Promise<User[]>;
 	abstract restore(id: UserRow["id"]): Promise<User>;
 	abstract findById(id: UserRow["id"]): Promise<NullableType<User>>;
@@ -37,7 +37,10 @@ export abstract class UserRepository {
 		id: UserRow["id"],
 		payload: DeepPartial<UserRow>,
 	): Promise<UserRow | null>;
-	abstract count(filterOptions?: FilterUserDto | null): Promise<number>;
+	abstract count(
+		filterOptions?: FilterUserDto | null,
+		isDeleted?: boolean,
+	): Promise<number>;
 
 	abstract remove(id: UserRow["id"]): Promise<void>;
 }

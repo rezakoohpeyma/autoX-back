@@ -13,7 +13,7 @@ import {
 import { NullableType } from "../../../../../../utils/types/nullable.type";
 import { UserMapper } from "../mappers/user.mapper";
 import { users } from "../schema/users.schema";
-import { IPaginationOptions } from "../../../../../../utils/types/pagination-options";
+import { PaginationOptions } from "../../../../../../utils/types/pagination-options";
 import { DeepPartial } from "../../../../../../utils/types/deep-partial.type";
 import { UserRepository } from "../../user.repository";
 import { DB } from "../../../../../../db/db.token";
@@ -27,6 +27,26 @@ import { FilterUserDto, SortUserDto } from "../../../../dto/query-user.dto";
 @Injectable()
 export class DrizzleUserRepository implements UserRepository {
 	constructor(@Inject(DB) private readonly drizzle: Database) {}
+
+	private buildOrderBy(sortOptions?: SortUserDto[] | null): SQL[] {
+		return (
+			sortOptions?.map((sort) => {
+				const dir = sort.order === "asc" ? asc : desc;
+				switch (sort.orderBy) {
+					case "email":
+						return dir(users.email);
+					case "firstName":
+						return dir(users.firstName);
+					case "lastName":
+						return dir(users.lastName);
+					case "createdAt":
+						return dir(users.createdAt);
+					default:
+						return dir(users.id);
+				}
+			}) ?? [asc(users.id)]
+		);
+	}
 
 	async create(data: CreateUserDto): Promise<UserRow> {
 		const persistenceModel = UserMapper.toPersistence(data);
@@ -42,115 +62,40 @@ export class DrizzleUserRepository implements UserRepository {
 		filterOptions,
 		sortOptions,
 		paginationOptions,
-	}: {
-		filterOptions?: FilterUserDto | null;
-		sortOptions?: SortUserDto[] | null;
-		paginationOptions: IPaginationOptions;
-	}): Promise<User[]> {
-		console.log(filterOptions);
-		console.log(sortOptions);
-		console.log(paginationOptions);
-
+	}) {
 		const conditions: SQL[] = [isNull(users.deletedAt)];
 
 		if (filterOptions?.isActive !== undefined) {
 			conditions.push(eq(users.isActive, filterOptions.isActive));
 		}
 
-		const orderBy = sortOptions?.map((sort) => {
-			switch (sort.orderBy) {
-				case "id":
-					return sort.order === "asc" ? asc(users.id) : desc(users.id);
+		const result = await this.drizzle
+			.select()
+			.from(users)
+			.where(and(...conditions))
+			.orderBy(...this.buildOrderBy(sortOptions))
+			.limit(paginationOptions.limit)
+			.offset((paginationOptions.page - 1) * paginationOptions.limit);
 
-				case "email":
-					return sort.order === "asc" ? asc(users.email) : desc(users.email);
+		return result.map(UserMapper.toDomain);
+	}
 
-				case "firstName":
-					return sort.order === "asc"
-						? asc(users.firstName)
-						: desc(users.firstName);
+	async getDeletedUsers({ filterOptions, sortOptions, paginationOptions }) {
+		const conditions: SQL[] = [isNotNull(users.deletedAt)];
 
-				case "lastName":
-					return sort.order === "asc"
-						? asc(users.lastName)
-						: desc(users.lastName);
-
-				case "createdAt":
-					return sort.order === "asc"
-						? asc(users.createdAt)
-						: desc(users.createdAt);
-
-				default:
-					return asc(users.id);
-			}
-		}) ?? [asc(users.id)];
+		if (filterOptions?.isActive !== undefined) {
+			conditions.push(eq(users.isActive, filterOptions.isActive));
+		}
 
 		const result = await this.drizzle
 			.select()
 			.from(users)
 			.where(and(...conditions))
-			.orderBy(...orderBy)
+			.orderBy(...this.buildOrderBy(sortOptions))
 			.limit(paginationOptions.limit)
 			.offset((paginationOptions.page - 1) * paginationOptions.limit);
 
-		return result.map((user) => UserMapper.toDomain(user));
-	}
-
-	async getDeletedUsers({
-		filterOptions,
-		sortOptions,
-		paginationOptions,
-	}: {
-		filterOptions?: FilterUserDto | null;
-		sortOptions?: SortUserDto[] | null;
-		paginationOptions: IPaginationOptions;
-	}): Promise<User[]> {
-		console.log(filterOptions);
-		console.log(sortOptions);
-		console.log(paginationOptions);
-
-		const conditions: SQL[] = [];
-
-		if (filterOptions?.isActive !== undefined) {
-			conditions.push(eq(users.isActive, filterOptions.isActive));
-		}
-		const orderBy = sortOptions?.map((sort) => {
-			switch (sort.orderBy) {
-				case "id":
-					return sort.order === "asc" ? asc(users.id) : desc(users.id);
-
-				case "email":
-					return sort.order === "asc" ? asc(users.email) : desc(users.email);
-
-				case "firstName":
-					return sort.order === "asc"
-						? asc(users.firstName)
-						: desc(users.firstName);
-
-				case "lastName":
-					return sort.order === "asc"
-						? asc(users.lastName)
-						: desc(users.lastName);
-
-				case "createdAt":
-					return sort.order === "asc"
-						? asc(users.createdAt)
-						: desc(users.createdAt);
-
-				default:
-					return asc(users.id);
-			}
-		}) ?? [asc(users.id)];
-
-		const result = await this.drizzle
-			.select()
-			.from(users)
-			.where(and(isNotNull(users.deletedAt), ...conditions))
-			.orderBy(...orderBy)
-			.limit(paginationOptions.limit)
-			.offset((paginationOptions.page - 1) * paginationOptions.limit);
-
-		return result.map((user) => UserMapper.toDomain(user));
+		return result.map(UserMapper.toDomain);
 	}
 
 	async restore(id: User["id"]): Promise<User> {
@@ -176,13 +121,10 @@ export class DrizzleUserRepository implements UserRepository {
 	}
 
 	async findByIds(ids: UserRow["id"][]): Promise<UserRow[]> {
-		const numericIds = ids.map((id) =>
-			typeof id === "string" ? parseInt(id, 10) : id,
-		);
 		const result = await this.drizzle
 			.select()
 			.from(users)
-			.where(inArray(users.id, numericIds));
+			.where(inArray(users.id, ids));
 		return result.map(UserMapper.toDomain);
 	}
 
@@ -219,18 +161,27 @@ export class DrizzleUserRepository implements UserRepository {
 			.where(eq(users.id, id));
 	}
 
-	async count(filterOptions?: FilterUserDto | null): Promise<number> {
-	const conditions: SQL[] = [];
+	async count(
+		filterOptions?: FilterUserDto | null,
+		isDeleted: boolean = false,
+	): Promise<number> {
+		const conditions: SQL[] = [];
 
-	if (filterOptions?.isActive !== undefined) {
-		conditions.push(eq(users.isActive, filterOptions.isActive));
+		if (isDeleted) {
+			conditions.push(isNotNull(users.deletedAt));
+		} else {
+			conditions.push(isNull(users.deletedAt));
+		}
+
+		if (filterOptions?.isActive !== undefined) {
+			conditions.push(eq(users.isActive, filterOptions.isActive));
+		}
+
+		const result = await this.drizzle
+			.select({ value: count() })
+			.from(users)
+			.where(and(...conditions));
+
+		return result[0].value;
 	}
-
-	const result = await this.drizzle
-		.select({ value: count() })
-		.from(users)
-		.where(and(...conditions));
-
-	return result[0].value;
-}
 }
