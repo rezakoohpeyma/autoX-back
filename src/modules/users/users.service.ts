@@ -10,7 +10,6 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import bcrypt from "bcrypt";
 import { UserMapper } from "./infrastructure/persistence/drizzle/mappers/user.mapper";
 import { UserResponseDto } from "./dto/user-response.dto";
-import { PaginationOptions } from "../../utils/types/pagination-options";
 import { NullableType } from "../../utils/types/nullable.type";
 import { UserRepository } from "./infrastructure/persistence/user.repository";
 import { User } from "./domain/user";
@@ -37,7 +36,7 @@ export class UsersService {
 		query: QueryUserDto,
 	): Promise<PaginatedResponseDto<UserResponseDto>> {
 		const { page = 1, limit = 10 } = query;
-		const safeLimit = Math.min(limit, 50); 
+		const safeLimit = Math.min(limit, 50);
 		const users = await this.usersRepository.findManyWithPagination({
 			filterOptions: query.filters,
 			sortOptions: query.sort,
@@ -95,6 +94,9 @@ export class UsersService {
 		}
 		return user ? UserMapper.toResponse(user) : null;
 	}
+	async findByPhoneNumber(phoneNumber: string): Promise<NullableType<User>> {
+    return this.usersRepository.findByPhoneNumber(phoneNumber);
+  }
 
 	async changeStatus(dto: ChangeUserStatusDto) {
 		const users = await this.usersRepository.findByIds(dto.ids);

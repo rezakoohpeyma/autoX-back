@@ -32,6 +32,7 @@ export abstract class UserRepository {
 	abstract restore(id: UserRow["id"]): Promise<User>;
 	abstract findById(id: UserRow["id"]): Promise<NullableType<User>>;
 	abstract findByIds(ids: UserRow["id"][]): Promise<UserRow[]>;
+	abstract findByPhoneNumber(phoneNumber: string): Promise<NullableType<User>>;
 	abstract changeStatus(data: ChangeUserStatusDto): Promise<User[]>;
 	abstract update(
 		id: UserRow["id"],

@@ -7,5 +7,6 @@ import { DrizzleUserPersistenceModule } from "./infrastructure/persistence/drizz
 	imports: [DrizzleUserPersistenceModule],
 	providers: [UsersService],
 	controllers: [UsersController],
+	exports : [UsersService]
 })
 export class UsersModule {}

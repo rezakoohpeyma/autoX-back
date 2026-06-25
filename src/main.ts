@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { NestFactory, Reflector } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
@@ -7,13 +8,11 @@ import validationOptions from "./utils/validation-options";
 import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, {
-		cors : {
-			origin : [process.env.CORS_ORIGINS!],
-			credentials : true
-		}
+		cors: {
+			origin: [process.env.CORS_ORIGINS!],
+			credentials: true,
+		},
 	});
-
-	console.log(process.env.PORT)
 
 	app.enableShutdownHooks();
 	app.useGlobalPipes(new ValidationPipe(validationOptions));

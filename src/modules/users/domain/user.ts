@@ -3,9 +3,9 @@ export class User {
 
 	email!: string | null;
 
-	firstName!: string | null;
+	firstName!: string;
 
-	lastName!: string | null;
+	lastName!: string;
 
 	phoneNumber!: string;
 

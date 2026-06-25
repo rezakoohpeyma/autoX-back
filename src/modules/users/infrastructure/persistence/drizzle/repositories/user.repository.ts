@@ -119,6 +119,19 @@ export class DrizzleUserRepository implements UserRepository {
 			.limit(1);
 		return result ? UserMapper.toDomain(result) : null;
 	}
+	async findByPhoneNumber(phoneNumber: string): Promise<NullableType<User>> {
+    const [userEntity] = await this.drizzle
+      .select()
+      .from(users)
+      .where(eq(users.phoneNumber, phoneNumber))
+      .limit(1);
+
+    if (!userEntity) {
+      return null;
+    }
+
+    return UserMapper.toDomain(userEntity);
+  }
 
 	async findByIds(ids: UserRow["id"][]): Promise<UserRow[]> {
 		const result = await this.drizzle
