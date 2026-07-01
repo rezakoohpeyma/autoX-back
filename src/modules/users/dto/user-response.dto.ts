@@ -7,7 +7,7 @@ export class UserResponseDto {
 	lastName!: string | null;
 	@Expose({ groups: ["me", "admin"] })
 	email!: string | null;
-    
+
 	@Expose({ groups: ["me", "admin"] })
 	phoneNumber!: string;
 	isActive!: boolean | null;

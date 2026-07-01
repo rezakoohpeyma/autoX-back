@@ -9,16 +9,35 @@ import type { NullableType } from "../../utils/types/nullable.type";
 import type { User } from "./domain/user";
 import type { ChangeUserStatusDto } from "./dto/change-user-status-dto";
 import type { CreateUserDto } from "./dto/create-user.dto";
-import { type QueryUserDto } from "./dto/query-user.dto";
+import { QueryUserDto } from "./dto/query-user.dto";
 import type { UpdateUserDto } from "./dto/update-user.dto";
 import { UserMapper } from "./infrastructure/persistence/drizzle/mappers/user.mapper";
-import { UserRepository } from "./infrastructure/persistence/user.repository";
+import { FindManyUsersCriteria, UserRepository } from "./infrastructure/persistence/user.repository";
 import { UserRow } from "./types/user";
 import { hashValue } from "../../utils/hash.util";
+import { SortOrder } from "../../common/enums/sort-order";
 @Injectable()
 export class UsersService {
 	constructor(private readonly usersRepository: UserRepository) {}
 
+    private extractCriteria(query: QueryUserDto): Omit<FindManyUsersCriteria, 'paginationOptions'> {
+        const filterOptions = {
+            search: query.search,
+            isActive: query.isActive,
+            createdFrom: query.createdFrom,
+            createdTo: query.createdTo,
+            updatedFrom: query.updatedFrom,
+            updatedTo: query.updatedTo,
+        };
+
+        const sortOptions = query.sortBy ? {
+            field: query.sortBy,
+            order: query.sortOrder ?? SortOrder.DESC
+        } : null;
+
+        return { filterOptions, sortOptions };
+    }
+	 
 	async create(createUserDto: CreateUserDto): Promise<UserRow> {
 		const password = await hashValue(createUserDto.password);
 
@@ -29,43 +48,38 @@ export class UsersService {
 		return user;
 	}
 
-
-	async findManyWithPagination(
-		query: QueryUserDto,
-	): Promise<PaginatedResponseDto<UserRow>> {
+	async findManyWithPagination(query: QueryUserDto): Promise<PaginatedResponseDto<UserRow>> {
 		const { page = 1, limit = 10 } = query;
 		const safeLimit = Math.min(limit, 50);
+        
+        const { filterOptions, sortOptions } = this.extractCriteria(query);
+
 		const users = await this.usersRepository.findManyWithPagination({
-			filterOptions: query.filters,
-			sortOptions: query.sort,
+			filterOptions,
+			sortOptions,
 			paginationOptions: { page, limit: safeLimit },
 		});
 
-		const total = await this.usersRepository.count(query.filters, false);
+		const total = await this.usersRepository.count(filterOptions, false);
 
-	return paginateResponse(users, total, {
-        page,
-        limit: safeLimit,
-    });
+		return paginateResponse(users, total, { page, limit: safeLimit });
 	}
-	async getDeletedUsers(
-		query: QueryUserDto,
-	): Promise<PaginatedResponseDto<User>> {
+
+	async getDeletedUsers(query: QueryUserDto): Promise<PaginatedResponseDto<User>> {
 		const { page = 1, limit = 10 } = query;
 		const safeLimit = Math.min(limit, 50);
+        
+        const { filterOptions, sortOptions } = this.extractCriteria(query);
 
 		const users = await this.usersRepository.getDeletedUsers({
-			filterOptions: query.filters,
-			sortOptions: query.sort,
+			filterOptions,
+			sortOptions,
 			paginationOptions: { page, limit: safeLimit },
 		});
 
-		const total = await this.usersRepository.count(query.filters, true);
+		const total = await this.usersRepository.count(filterOptions, true);
 
-		return paginateResponse(users, total, {
-        page,
-        limit: safeLimit,
-    });
+		return paginateResponse(users, total, { page, limit: safeLimit });
 	}
 
 	async restoreUser(id: User["id"]): Promise<UserRow> {

@@ -3,9 +3,9 @@ import type { UserResponseDto } from "../../../../dto/user-response.dto";
 import type { UserRow } from "../../../../types/user";
 
 export class UserMapper {
-static toDomain(raw: UserRow): User {
-		const user = new User(); 
-        
+	static toDomain(raw: UserRow): User {
+		const user = new User();
+
 		user.id = raw.id;
 		user.email = raw.email;
 		user.firstName = raw.firstName;
@@ -16,7 +16,7 @@ static toDomain(raw: UserRow): User {
 		user.createdAt = raw.createdAt;
 		user.updatedAt = raw.updatedAt;
 		user.deletedAt = raw.deletedAt;
-        
+
 		return user;
 	}
 	static toPersistence(

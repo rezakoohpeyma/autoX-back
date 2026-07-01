@@ -5,18 +5,18 @@ import {
 	UnauthorizedException,
 	UnprocessableEntityException,
 } from "@nestjs/common";
-import crypto from 'crypto';
-import ms from 'ms';
-import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
+import crypto from "crypto";
+import ms from "ms";
+import { randomStringGenerator } from "@nestjs/common/utils/random-string-generator.util";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import type { User } from "../users/domain/user";
 import { UserMapper } from "../users/infrastructure/persistence/drizzle/mappers/user.mapper";
 import { UsersService } from "../users/users.service";
 import { AuthResetPasswordDto } from "./dto/auth-reset-password.dto";
-import type { LoginDto } from "./dto/login.dto";
-import type { AuthResponseDto } from "./dto/login-response.dto";
-import type { RegisterDto } from "./dto/register.dto";
+import  { LoginDto } from "./dto/login.dto";
+import  { AuthResponseDto } from "./dto/login-response.dto";
+import  { RegisterDto } from "./dto/register.dto";
 import { SessionRepository } from "./infrastructure/persistence/session.repository";
 import { compareHash, hashValue } from "../../utils/hash.util";
 
@@ -37,10 +37,7 @@ export class AuthService {
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		const isPasswordValid = await compareHash(
-			loginDto.password,
-			user.password,
-		);
+		const isPasswordValid = await compareHash(loginDto.password, user.password);
 		if (!isPasswordValid) {
 			throw new UnauthorizedException("Invalid credentials");
 		}
@@ -105,11 +102,10 @@ export class AuthService {
 	}
 
 	private async generateAuthResponse(user: User): Promise<AuthResponseDto> {
-
-		 const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+		const hash = crypto
+			.createHash("sha256")
+			.update(randomStringGenerator())
+			.digest("hex");
 
 		const session = await this.sessionRepository.create({
 			userId: user.id,
