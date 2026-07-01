@@ -1,6 +1,6 @@
 // src/utils/paginate.util.ts
-import { PaginatedResponseDto } from "../common/pagination/dto/paginated-response.dto";
-import { PaginationOptions } from "./types/pagination-options";
+import type { PaginatedResponseDto } from "../common/pagination/dto/paginated-response.dto";
+import type { PaginationOptions } from "./types/pagination-options";
 
 export function paginateResponse<T>(
 	data: T[],

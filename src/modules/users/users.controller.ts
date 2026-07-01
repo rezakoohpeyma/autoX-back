@@ -1,5 +1,6 @@
 import {
 	Body,
+	ClassSerializerInterceptor,
 	Controller,
 	Delete,
 	Get,
@@ -10,28 +11,32 @@ import {
 	Post,
 	Put,
 	Query,
+	UseInterceptors,
 } from "@nestjs/common";
+import type { NullableType } from "../../utils/types/nullable.type";
+import type { User } from "./domain/user";
+import type { ChangeUserStatusDto } from "./dto/change-user-status-dto";
+import type { CreateUserDto } from "./dto/create-user.dto";
+import type { QueryUserDto } from "./dto/query-user.dto";
+import type { UpdateUserDto } from "./dto/update-user.dto";
 import { UsersService } from "./users.service";
-import { CreateUserDto } from "./dto/create-user.dto";
+import { PaginatedResponseDto } from "../../common/pagination/dto/paginated-response.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
-import { NullableType } from "../../utils/types/nullable.type";
-import { User } from "./domain/user";
-import { QueryUserDto } from "./dto/query-user.dto";
-import { ChangeUserStatusDto } from "./dto/change-user-status-dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-
 @Controller("users")
+@UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
-	create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+	create(@Body() createUserDto: CreateUserDto) : Promise<UserResponseDto> {
 		return this.usersService.create(createUserDto);
 	}
 
 	@Get()
-	async findAll(@Query() query: QueryUserDto) {
+	async findAll(
+		@Query() query: QueryUserDto,
+	): Promise<PaginatedResponseDto<UserResponseDto>> {
 		return this.usersService.findManyWithPagination(query);
 	}
 

@@ -9,8 +9,8 @@ import {
 	IsString,
 	ValidateNested,
 } from "class-validator";
-import { UserSortField } from "../enums/user.enums";
 import { PaginationDto } from "../../../common/pagination/dto/pagination-dto";
+import { UserSortField } from "../enums/user.enums";
 
 export enum SortOrder {
 	ASC = "asc",

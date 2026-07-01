@@ -8,21 +8,23 @@ import {
 	inArray,
 	isNotNull,
 	isNull,
-	SQL,
+	type SQL,
 } from "drizzle-orm";
-import { NullableType } from "../../../../../../utils/types/nullable.type";
+import type { DB as Database } from "../../../../../../db";
+import { DB } from "../../../../../../db/db.token";
+import type { DeepPartial } from "../../../../../../utils/types/deep-partial.type";
+import type { NullableType } from "../../../../../../utils/types/nullable.type";
+import type { User } from "../../../../domain/user";
+import type { ChangeUserStatusDto } from "../../../../dto/change-user-status-dto";
+import type { CreateUserDto } from "../../../../dto/create-user.dto";
+import type {
+	FilterUserDto,
+	SortUserDto,
+} from "../../../../dto/query-user.dto";
+import type { UserRow } from "../../../../types/user";
+import { UserRepository } from "../../user.repository";
 import { UserMapper } from "../mappers/user.mapper";
 import { users } from "../schema/users.schema";
-import { PaginationOptions } from "../../../../../../utils/types/pagination-options";
-import { DeepPartial } from "../../../../../../utils/types/deep-partial.type";
-import { UserRepository } from "../../user.repository";
-import { DB } from "../../../../../../db/db.token";
-import type { DB as Database } from "../../../../../../db";
-import { UserRow } from "../../../../types/user";
-import { User } from "../../../../domain/user";
-import { CreateUserDto } from "../../../../dto/create-user.dto";
-import { ChangeUserStatusDto } from "../../../../dto/change-user-status-dto";
-import { FilterUserDto, SortUserDto } from "../../../../dto/query-user.dto";
 
 @Injectable()
 export class DrizzleUserRepository implements UserRepository {
@@ -108,7 +110,7 @@ export class DrizzleUserRepository implements UserRepository {
 			.where(eq(users.id, id))
 			.returning();
 
-		return user;
+		return UserMapper.toDomain(user);
 	}
 
 	async findById(id: UserRow["id"]): Promise<NullableType<UserRow>> {
@@ -120,18 +122,18 @@ export class DrizzleUserRepository implements UserRepository {
 		return result ? UserMapper.toDomain(result) : null;
 	}
 	async findByPhoneNumber(phoneNumber: string): Promise<NullableType<User>> {
-    const [userEntity] = await this.drizzle
-      .select()
-      .from(users)
-      .where(eq(users.phoneNumber, phoneNumber))
-      .limit(1);
+		const [userEntity] = await this.drizzle
+			.select()
+			.from(users)
+			.where(eq(users.phoneNumber, phoneNumber))
+			.limit(1);
 
-    if (!userEntity) {
-      return null;
-    }
+		if (!userEntity) {
+			return null;
+		}
 
-    return UserMapper.toDomain(userEntity);
-  }
+		return UserMapper.toDomain(userEntity);
+	}
 
 	async findByIds(ids: UserRow["id"][]): Promise<UserRow[]> {
 		const result = await this.drizzle
@@ -141,17 +143,18 @@ export class DrizzleUserRepository implements UserRepository {
 		return result.map(UserMapper.toDomain);
 	}
 
-	async changeStatus(dto: ChangeUserStatusDto): Promise<User[]> {
-		return await this.drizzle
-			.update(users)
-			.set({
-				isActive: dto.isActive,
-				updatedAt: new Date(),
-			})
-			.where(inArray(users.id, dto.ids))
-			.returning();
-	}
+async changeStatus(dto: ChangeUserStatusDto): Promise<User[]> {
+    const updatedUsers = await this.drizzle
+        .update(users)
+        .set({
+            isActive: dto.isActive,
+            updatedAt: new Date(),
+        })
+        .where(inArray(users.id, dto.ids))
+        .returning();
 
+    return updatedUsers.map(UserMapper.toDomain);
+}
 	async update(
 		id: UserRow["id"],
 		payload: DeepPartial<UserRow>,

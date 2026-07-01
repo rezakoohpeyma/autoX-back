@@ -1,10 +1,10 @@
-import { DeepPartial } from "../../../../utils/types/deep-partial.type";
-import { NullableType } from "../../../../utils/types/nullable.type";
-import { PaginationOptions } from "../../../../utils/types/pagination-options";
-import { User } from "../../domain/user";
-import { ChangeUserStatusDto } from "../../dto/change-user-status-dto";
-import { FilterUserDto } from "../../dto/query-user.dto";
-import { UserRow } from "../../types/user";
+import type { DeepPartial } from "../../../../utils/types/deep-partial.type";
+import type { NullableType } from "../../../../utils/types/nullable.type";
+import type { PaginationOptions } from "../../../../utils/types/pagination-options";
+import type { User } from "../../domain/user";
+import type { ChangeUserStatusDto } from "../../dto/change-user-status-dto";
+import type { FilterUserDto } from "../../dto/query-user.dto";
+import type { UserRow } from "../../types/user";
 export abstract class UserRepository {
 	abstract create(
 		data: Omit<UserRow, "id" | "createdAt" | "deletedAt" | "updatedAt">,

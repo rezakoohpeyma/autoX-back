@@ -1,12 +1,12 @@
 import {
+	IsBoolean,
 	IsEmail,
+	IsNotEmpty,
+	IsOptional,
 	IsPhoneNumber,
 	IsString,
-	MinLength,
-	IsNotEmpty,
 	Matches,
-	IsBoolean,
-	IsOptional,
+	MinLength,
 } from "class-validator";
 
 export class CreateUserDto {

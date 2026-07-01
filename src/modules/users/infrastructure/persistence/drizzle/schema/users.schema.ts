@@ -1,14 +1,14 @@
 import { sql } from "drizzle-orm";
 import {
-	pgTable,
 	boolean,
-	varchar,
-	timestamp,
-	text,
 	integer,
+	pgTable,
+	serial,
+	text,
+	timestamp,
 	uniqueIndex,
+	varchar,
 } from "drizzle-orm/pg-core";
-import { serial } from "drizzle-orm/pg-core";
 
 export const users = pgTable(
 	"users",
