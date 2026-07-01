@@ -6,7 +6,7 @@ import {
 	UnprocessableEntityException,
 } from "@nestjs/common";
 import crypto from "crypto";
-import ms from "ms";
+import ms, { StringValue } from "ms";
 import { randomStringGenerator } from "@nestjs/common/utils/random-string-generator.util";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
@@ -143,7 +143,7 @@ export class AuthService {
 		return {
 			token,
 			refreshToken,
-			tokenExpires: Date.now() + ms(tokenExpiresIn),
+			tokenExpires: Date.now() + ms(tokenExpiresIn as StringValue),
 			user: user!,
 		};
 	}
